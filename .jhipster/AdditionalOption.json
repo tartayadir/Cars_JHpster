@@ -1,0 +1,27 @@
+{
+  "applications": "*",
+  "changelogDate": "20230221164647",
+  "dto": "no",
+  "embedded": false,
+  "entityTableName": "additional_option",
+  "fields": [
+    {
+      "fieldName": "option",
+      "fieldType": "String"
+    }
+  ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": false,
+  "name": "AdditionalOption",
+  "pagination": "no",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "car",
+      "otherEntityRelationshipName": "additionalOption",
+      "relationshipName": "car",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "service": "no"
+}

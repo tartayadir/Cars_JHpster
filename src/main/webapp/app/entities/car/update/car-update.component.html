@@ -1,0 +1,210 @@
+<div class="d-flex justify-content-center my-2" style="background: #f5f1ed">
+  <div class="col-8">
+    <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2 id="jhi-car-heading" data-cy="CarCreateUpdateHeading">Create or edit a Car</h2>
+
+      <div>
+        <jhi-alert-error></jhi-alert-error>
+
+        <div class="row mb-3" *ngIf="editForm.controls.id.value !== null">
+          <label class="form-label" for="field_id">ID</label>
+          <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+        </div>
+
+        <div class="row mb-3">
+          <label class="form-label" for="field_carBrand">Car Brand</label>
+          <select class="form-control" name="carBrand" formControlName="carBrand" id="field_carBrand" data-cy="carBrand">
+            <option *ngIf="!car" [ngValue]="null"></option>
+            <option *ngIf="car" [ngValue]="car.carBrand">{{ carBrandValues[carBrandKeys.indexOf(car!.carBrand!)] }}</option>
+            <option *ngFor="let carBrand of carBrandValues" [value]="carBrand">{{ carBrand }}</option>
+          </select>
+          <div *ngIf="editForm.get('carBrand')!.invalid && (editForm.get('carBrand')!.dirty || editForm.get('carBrand')!.touched)">
+            <small class="form-text text-danger" *ngIf="editForm.get('carBrand')?.errors?.required"> This field is required. </small>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="form-label" for="field_model">Model</label>
+          <input type="text" class="form-control" name="model" id="field_model" data-cy="model" formControlName="model" />
+          <div *ngIf="editForm.get('model')!.invalid && (editForm.get('model')!.dirty || editForm.get('model')!.touched)">
+            <small class="form-text text-danger" *ngIf="editForm.get('model')?.errors?.required"> This field is required. </small>
+            <small class="form-text text-danger" *ngIf="editForm.get('model')?.errors?.minlength">
+              This field is required to be at least 2 characters.
+            </small>
+            <small class="form-text text-danger" *ngIf="editForm.get('model')?.errors?.maxlength">
+              This field cannot be longer than 40 characters.
+            </small>
+            <small class="form-text text-danger" *ngIf="editForm.get('model')?.errors?.pattern">
+              This field should follow pattern for Model.
+            </small>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="form-label" for="field_carBodyType">Car Body Type</label>
+          <select class="form-control" name="carBodyType" formControlName="carBodyType" id="field_carBodyType" data-cy="carBodyType">
+            <option *ngIf="!car" [ngValue]="null"></option>
+            <option *ngIf="car" [ngValue]="car.carBodyType">{{ carBodyTypeValues[carBodyTypeKeys.indexOf(car!.carBodyType!)] }}</option>
+            <option *ngFor="let carBodyType of carBodyTypeValues" [value]="carBodyType">{{ carBodyType }}</option>
+          </select>
+          <div *ngIf="editForm.get('carBodyType')!.invalid && (editForm.get('carBodyType')!.dirty || editForm.get('carBodyType')!.touched)">
+            <small class="form-text text-danger" *ngIf="editForm.get('carBodyType')?.errors?.required"> This field is required. </small>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="form-label" for="field_year">Year</label>
+          <input type="number" class="form-control" name="year" id="field_year" data-cy="year" formControlName="year" />
+          <div *ngIf="editForm.get('year')!.invalid && (editForm.get('year')!.dirty || editForm.get('year')!.touched)">
+            <small class="form-text text-danger" *ngIf="editForm.get('year')?.errors?.min"> This field should be at least 1920. </small>
+            <small class="form-text text-danger" *ngIf="editForm.get('year')?.errors?.max"> This field cannot be more than 2023. </small>
+            <small class="form-text text-danger" [hidden]="!editForm.get('year')?.errors?.number"> This field should be a number. </small>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="form-label" for="field_transmissionBoxTypes">Transmission Box Types</label>
+          <select
+            class="form-control"
+            name="transmissionBoxTypes"
+            formControlName="transmissionBoxTypes"
+            id="field_transmissionBoxTypes"
+            data-cy="transmissionBoxTypes"
+          >
+            <option *ngIf="!car" [ngValue]="null"></option>
+            <option *ngIf="car" [ngValue]="car.transmissionBoxTypes">
+              {{ transmissionBoxTypeValues[transmissionBoxTypeKeys.indexOf(car!.transmissionBoxTypes!)] }}
+            </option>
+            <option *ngFor="let transmissionBoxType of transmissionBoxTypeValues" [value]="transmissionBoxType">
+              {{ transmissionBoxType }}
+            </option>
+          </select>
+          <div
+            *ngIf="
+              editForm.get('transmissionBoxTypes')!.invalid &&
+              (editForm.get('transmissionBoxTypes')!.dirty || editForm.get('transmissionBoxTypes')!.touched)
+            "
+          >
+            <small class="form-text text-danger" *ngIf="editForm.get('transmissionBoxTypes')?.errors?.required">
+              This field is required.
+            </small>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="form-label" for="field_engineCapacity">Engine Capacity</label>
+          <input
+            type="number"
+            class="form-control"
+            name="engineCapacity"
+            id="field_engineCapacity"
+            data-cy="engineCapacity"
+            formControlName="engineCapacity"
+          />
+          <div
+            *ngIf="
+              editForm.get('engineCapacity')!.invalid && (editForm.get('engineCapacity')!.dirty || editForm.get('engineCapacity')!.touched)
+            "
+          >
+            <small class="form-text text-danger" *ngIf="editForm.get('engineCapacity')?.errors?.required"> This field is required. </small>
+            <small class="form-text text-danger" *ngIf="editForm.get('engineCapacity')?.errors?.min">
+              This field should be at least 0.
+            </small>
+            <small class="form-text text-danger" *ngIf="editForm.get('engineCapacity')?.errors?.max">
+              This field cannot be more than 15.
+            </small>
+            <small class="form-text text-danger" [hidden]="!editForm.get('engineCapacity')?.errors?.number">
+              This field should be a number.
+            </small>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="form-label" for="field_fullDescription">Full Description</label>
+          <input
+            type="text"
+            class="form-control"
+            name="fullDescription"
+            id="field_fullDescription"
+            data-cy="fullDescription"
+            formControlName="fullDescription"
+          />
+          <div
+            *ngIf="
+              editForm.get('fullDescription')!.invalid &&
+              (editForm.get('fullDescription')!.dirty || editForm.get('fullDescription')!.touched)
+            "
+          >
+            <small class="form-text text-danger" *ngIf="editForm.get('fullDescription')?.errors?.maxlength">
+              This field cannot be longer than 5000 characters.
+            </small>
+            <small class="form-text text-danger" *ngIf="editForm.get('fullDescription')?.errors?.pattern">
+              This field should follow pattern for Full Description.
+            </small>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="form-label" for="field_shortDescription">Short Description</label>
+          <input
+            type="text"
+            class="form-control"
+            name="shortDescription"
+            id="field_shortDescription"
+            data-cy="shortDescription"
+            formControlName="shortDescription"
+          />
+          <div
+            *ngIf="
+              editForm.get('shortDescription')!.invalid &&
+              (editForm.get('shortDescription')!.dirty || editForm.get('shortDescription')!.touched)
+            "
+          >
+            <small class="form-text text-danger" *ngIf="editForm.get('shortDescription')?.errors?.maxlength">
+              This field cannot be longer than 1000 characters.
+            </small>
+            <small class="form-text text-danger" *ngIf="editForm.get('shortDescription')?.errors?.pattern">
+              This field should follow pattern for Short Description.
+            </small>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="form-label" for="field_imageFileId">Image File Id</label>
+          <input
+            type="text"
+            class="form-control"
+            name="imageFileId"
+            id="field_imageFileId"
+            data-cy="imageFileId"
+            formControlName="imageFileId"
+          />
+          <div *ngIf="editForm.get('imageFileId')!.invalid && (editForm.get('imageFileId')!.dirty || editForm.get('imageFileId')!.touched)">
+            <small class="form-text text-danger" *ngIf="editForm.get('imageFileId')?.errors?.minlength">
+              This field is required to be at least 10 characters.
+            </small>
+            <small class="form-text text-danger" *ngIf="editForm.get('imageFileId')?.errors?.maxlength">
+              This field cannot be longer than 150 characters.
+            </small>
+          </div>
+        </div>
+      </div>
+
+      <div class="my-2">
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span>Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span>Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

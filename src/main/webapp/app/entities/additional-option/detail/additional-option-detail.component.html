@@ -1,0 +1,38 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <div *ngIf="additionalOption">
+      <h2 data-cy="additionalOptionDetailsHeading"><span>Additional Option</span></h2>
+
+      <hr />
+
+      <jhi-alert-error></jhi-alert-error>
+
+      <jhi-alert></jhi-alert>
+
+      <dl class="row-md jh-entity-details">
+        <dt><span>ID</span></dt>
+        <dd>
+          <span>{{ additionalOption.id }}</span>
+        </dd>
+        <dt><span>Option</span></dt>
+        <dd>
+          <span>{{ additionalOption.option }}</span>
+        </dd>
+        <dt><span>Car</span></dt>
+        <dd>
+          <div *ngIf="additionalOption.car">
+            <a [routerLink]="['/car', additionalOption.car.id, 'view']">{{ additionalOption.car.id }}</a>
+          </div>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/additional-option', additionalOption.id, 'edit']" class="btn btn-primary">
+        <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+      </button>
+    </div>
+  </div>
+</div>

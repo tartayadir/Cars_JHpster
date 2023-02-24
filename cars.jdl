@@ -59,7 +59,7 @@ entity AdditionalOption {
 }
 
 relationship OneToMany {
-    Car{option} to AdditionalOption{options}
+    Car to AdditionalOption{car}
 }
 
 

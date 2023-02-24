@@ -1,0 +1,293 @@
+<div class="container mx-auto w-75 h-75 my-3 card" style="background: #252323; color: #f5f1ed">
+  <div class="card-header" style="background: #252323">
+    <ng-container *ngIf="car">
+      <h2 class="card-title my-2">Edit {{ getBrandValue() }} {{ car.model | titlecase }}</h2>
+    </ng-container>
+    <ng-container *ngIf="!car">
+      <h2 class="card-title my-2">Add new car</h2>
+    </ng-container>
+  </div>
+
+  <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+    <div class="card-body" style="background: #252323; color: #f5f1ed">
+      <jhi-alert-error></jhi-alert-error>
+
+      <div class="row mb-4 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3">
+        <div class="col d-inline-flex">
+          <div class="form-outline">
+            <label for="field_carBrand" class="form-label"><h6>Car Brand</h6></label>
+            <select
+              class="form-select"
+              name="carBrand"
+              style="background: #f5f1ed"
+              formControlName="carBrand"
+              id="field_carBrand"
+              data-cy="carBrand"
+            >
+              <option *ngIf="car" [ngValue]="car.carBrand">{{ carBrandValues[carBrandKeys.indexOf(car!.carBrand!)] }}</option>
+              <option *ngFor="let carBrand of carBrandKeys" [value]="carBrand">{{ carBrandValues[carBrandKeys.indexOf(carBrand)] }}</option>
+            </select>
+            <div *ngIf="editForm.get('carBrand')!.invalid && (editForm.get('carBrand')!.dirty || editForm.get('carBrand')!.touched)">
+              <small class="form-text text-danger" *ngIf="editForm.get('carBrand')?.errors?.required"> This field is required. </small>
+            </div>
+          </div>
+        </div>
+
+        <div class="col d-inline-flex">
+          <div class="form-outline">
+            <label class="form-label" for="field_model"><h6>Model</h6></label>
+            <input
+              type="text"
+              class="form-control"
+              name="model"
+              id="field_model"
+              data-cy="model"
+              maxlength="41"
+              style="background: #f5f1ed"
+              formControlName="model"
+            />
+            <div *ngIf="editForm.get('model')!.invalid && (editForm.get('model')!.dirty || editForm.get('model')!.touched)">
+              <small class="form-text text-danger" *ngIf="editForm.get('model')?.errors?.required"> This field is required. </small>
+              <small class="form-text text-danger" *ngIf="editForm.get('model')?.errors?.minlength">
+                This field is required to be at least 2 characters.
+              </small>
+              <small class="form-text text-danger" *ngIf="editForm.get('model')?.errors?.maxlength">
+                This field cannot be longer than 40 characters.
+              </small>
+              <small class="form-text text-danger" *ngIf="editForm.get('model')?.errors?.pattern">
+                This field should follow pattern for Model.
+              </small>
+            </div>
+          </div>
+        </div>
+
+        <div class="col d-inline-flex">
+          <div class="form-outline">
+            <label class="form-label" for="field_carBodyType"><h6>Car Body Type</h6></label>
+            <select
+              class="form-select"
+              name="carBodyType"
+              style="background: #f5f1ed"
+              formControlName="carBodyType"
+              id="field_carBodyType"
+              data-cy="carBodyType"
+            >
+              <option *ngIf="car" [ngValue]="car.carBodyType">{{ carBodyTypeValues[carBodyTypeKeys.indexOf(car!.carBodyType!)] }}</option>
+              <option *ngFor="let carBodyType of carBodyTypeKeys" [value]="carBodyType">
+                {{ carBodyTypeValues[carBodyTypeKeys.indexOf(carBodyType)] }}
+              </option>
+            </select>
+            <div
+              *ngIf="editForm.get('carBodyType')!.invalid && (editForm.get('carBodyType')!.dirty || editForm.get('carBodyType')!.touched)"
+            >
+              <small class="form-text text-danger" *ngIf="editForm.get('carBodyType')?.errors?.required"> This field is required. </small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mb-4 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3">
+        <div class="col d-inline-flex">
+          <div class="form-outline">
+            <label class="form-label" for="field_transmissionBoxTypes"><h6>Transmission Box Types</h6></label>
+
+            <ng-container *ngFor="let transmissionBoxType of transmissionBoxTypeKeys">
+              <div class="form-check" id="transmission-box-input">
+                <input
+                  [value]="transmissionBoxType"
+                  type="radio"
+                  class="form-check-input"
+                  id="field_transmissionBoxTypes"
+                  name="transmissionBoxTypes"
+                  data-cy="transmissionBoxTypes"
+                  formControlName="transmissionBoxTypes"
+                />
+
+                <label class="form-check-label">
+                  {{ getTransmissionTypeViewValue(transmissionBoxType) }}
+                </label>
+              </div>
+            </ng-container>
+            <div
+              *ngIf="
+                editForm.get('transmissionBoxTypes')!.invalid &&
+                (editForm.get('transmissionBoxTypes')!.dirty || editForm.get('transmissionBoxTypes')!.touched)
+              "
+            >
+              <small class="form-text text-danger" *ngIf="editForm.get('transmissionBoxTypes')?.errors?.required">
+                This field is required.
+              </small>
+            </div>
+          </div>
+        </div>
+
+        <div class="col d-inline-flex">
+          <div class="form-outline">
+            <label class="form-label" for="field_year"><h6>Year</h6></label>
+            <input
+              type="number"
+              class="form-control"
+              name="year"
+              id="field_year"
+              data-cy="year"
+              min="1920"
+              max="{{ concurredYear }}"
+              style="background: #f5f1ed"
+              formControlName="year"
+            />
+            <div *ngIf="editForm.get('year')!.invalid && (editForm.get('year')!.dirty || editForm.get('year')!.touched)">
+              <small class="form-text text-danger" *ngIf="editForm.get('year')?.errors?.min"> This field should be at least 1920. </small>
+              <small class="form-text text-danger" *ngIf="editForm.get('year')?.errors?.max"> This field cannot be more than 2023. </small>
+              <small class="form-text text-danger" [hidden]="!editForm.get('year')?.errors?.number"> This field should be a number. </small>
+            </div>
+          </div>
+        </div>
+
+        <div class="col d-inline-flex">
+          <div class="form-outline">
+            <label class="form-label" for="field_engineCapacity"><h6>Engine Capacity</h6></label>
+
+            <div class="input-group d-inline-flex">
+              <div style="width: 65px">
+                <input
+                  type="number"
+                  class="form-control"
+                  name="engineCapacity"
+                  id="field_engineCapacity"
+                  data-cy="engineCapacity"
+                  style="background: #f5f1ed"
+                  formControlName="engineCapacity"
+                  step="0.1"
+                  max="15.1"
+                  min="0.0"
+                />
+              </div>
+
+              <span class="input-group-text" style="background: #f5f1ed">liters</span>
+            </div>
+
+            <div
+              *ngIf="
+                editForm.get('engineCapacity')!.invalid &&
+                (editForm.get('engineCapacity')!.dirty || editForm.get('engineCapacity')!.touched)
+              "
+            >
+              <small class="form-text text-danger" *ngIf="editForm.get('engineCapacity')?.errors?.required">
+                This field is required.
+              </small>
+              <small class="form-text text-danger" *ngIf="editForm.get('engineCapacity')?.errors?.min">
+                This field should be at least 0.
+              </small>
+              <small class="form-text text-danger" *ngIf="editForm.get('engineCapacity')?.errors?.max">
+                This field cannot be more than 15.
+              </small>
+              <small class="form-text text-danger" [hidden]="!editForm.get('engineCapacity')?.errors?.number">
+                This field should be a number.
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-outline mb-4">
+        <label class="form-label" for="field_shortDescription"><h6>Short Description</h6></label>
+        <textarea
+          type="text"
+          class="form-control"
+          name="shortDescription"
+          id="field_shortDescription"
+          data-cy="shortDescription"
+          rows="6"
+          maxlength="1001"
+          style="background: #f5f1ed"
+          formControlName="shortDescription"
+        ></textarea>
+        <div
+          *ngIf="
+            editForm.get('shortDescription')!.invalid &&
+            (editForm.get('shortDescription')!.dirty || editForm.get('shortDescription')!.touched)
+          "
+        >
+          <small class="form-text text-danger" *ngIf="editForm.get('shortDescription')?.errors?.maxlength">
+            This field cannot be longer than 1000 characters.
+          </small>
+          <small class="form-text text-danger" *ngIf="editForm.get('shortDescription')?.errors?.pattern">
+            This field should follow pattern for Short Description.
+          </small>
+        </div>
+      </div>
+
+      <div class="form-outline mb-4">
+        <label class="form-label" for="field_fullDescription"><h6>Full Description</h6></label>
+        <textarea
+          type="text"
+          class="form-control"
+          name="fullDescription"
+          id="field_fullDescription"
+          data-cy="fullDescription"
+          rows="6"
+          maxlength="5001"
+          style="background: #f5f1ed"
+          formControlName="fullDescription"
+        ></textarea>
+        <div
+          *ngIf="
+            editForm.get('fullDescription')!.invalid && (editForm.get('fullDescription')!.dirty || editForm.get('fullDescription')!.touched)
+          "
+        >
+          <small class="form-text text-danger" *ngIf="editForm.get('fullDescription')?.errors?.maxlength">
+            This field cannot be longer than 5000 characters.
+          </small>
+          <small class="form-text text-danger" *ngIf="editForm.get('fullDescription')?.errors?.pattern">
+            This field should follow pattern for Full Description.
+          </small>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-footer d-flex justify-content-end">
+      <div class="d-flex bd-highlight mb-3">
+        <div class="p-2 bd-highlight">
+          <div class="container my-2">
+            <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                class="bi bi-arrow-left"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"
+                />
+              </svg>
+              <span> Go back</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="p-2 bd-highlight">
+          <div class="container my-2">
+            <button
+              style="background: #a1cca5"
+              type="submit"
+              id="save-entity"
+              data-cy="entityCreateSaveButton"
+              [disabled]="editForm.invalid || isSaving"
+              class="btn btn-primary"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check2" viewBox="0 0 16 16">
+                <path
+                  d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
+                />
+              </svg>
+              <span> Submit</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,66 @@
+<div class="d-flex justify-content-center" style="background: #f5f1ed">
+  <div class="col-8">
+    <div *ngIf="car">
+      <h2 data-cy="carDetailsHeading"><span>Car</span></h2>
+
+      <hr />
+
+      <jhi-alert-error></jhi-alert-error>
+
+      <jhi-alert></jhi-alert>
+
+      <dl class="row-md jh-entity-details">
+        <dt><span>ID</span></dt>
+        <dd>
+          <span>{{ car.id }}</span>
+        </dd>
+        <dt><span>Car Brand</span></dt>
+        <dd>
+          <span>{{ car.carBrand }}</span>
+        </dd>
+        <dt><span>Model</span></dt>
+        <dd>
+          <span>{{ car.model }}</span>
+        </dd>
+        <dt><span>Car Body Type</span></dt>
+        <dd>
+          <span>{{ car.carBodyType }}</span>
+        </dd>
+        <dt><span>Year</span></dt>
+        <dd>
+          <span>{{ car.year }}</span>
+        </dd>
+        <dt><span>Transmission Box Types</span></dt>
+        <dd>
+          <span>{{ car.transmissionBoxTypes }}</span>
+        </dd>
+        <dt><span>Engine Capacity</span></dt>
+        <dd>
+          <span>{{ car.engineCapacity }}</span>
+        </dd>
+        <dt><span>Full Description</span></dt>
+        <dd>
+          <span>{{ car.fullDescription }}</span>
+        </dd>
+        <dt><span>Short Description</span></dt>
+        <dd>
+          <span>{{ car.shortDescription }}</span>
+        </dd>
+        <dt><span>Image File Id</span></dt>
+        <dd>
+          <span>{{ car.imageFileId }}</span>
+        </dd>
+      </dl>
+
+      <div class="my-2">
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/car', car.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
