@@ -5,7 +5,7 @@ import { CarBodyType } from '../../../enumerations/car-body-type.model';
 import { TransmissionBoxType } from '../../../enumerations/transmission-box-type.model';
 import { CarFormGroup, CarFormService } from '../../../car/update/car-form.service';
 import { CarService } from '../../../car/service/car.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { HttpResponse } from '@angular/common/http';
 import { finalize } from 'rxjs/operators';
@@ -33,7 +33,8 @@ export class CarUpdateCustomComponent implements OnInit {
     protected carService: CarService,
     protected carFormService: CarFormService,
     protected activatedRoute: ActivatedRoute,
-    private titleService: Title
+    private titleService: Title,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -74,7 +75,10 @@ export class CarUpdateCustomComponent implements OnInit {
   }
 
   protected onSaveSuccess(): void {
-    this.previousState();
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate([this.router.url]);
+    });
+    // this.previousState();
   }
 
   protected onSaveError(): void {
@@ -107,18 +111,6 @@ export class CarUpdateCustomComponent implements OnInit {
     if (!car.shortDescription || car.shortDescription.length == 0) {
       car.shortDescription = ' ';
     }
-
-    return car;
-  }
-
-  private fixEnums(car: ICar | NewCar): ICar | NewCar {
-    console.log(car);
-    // @ts-ignore
-    car.carBrand = Object.keys(CarBrand)[Object.values(CarBrand).indexOf(car.carBrand)];
-    // @ts-ignore
-    car.transmissionBoxTypes = Object.keys(TransmissionBoxType)[Object.values(TransmissionBoxType).indexOf(car.transmissionBoxTypes)];
-    // @ts-ignore
-    car.carBodyType = Object.keys(CarBodyType)[Object.values(CarBodyType).indexOf(car.carBodyType)];
 
     return car;
   }

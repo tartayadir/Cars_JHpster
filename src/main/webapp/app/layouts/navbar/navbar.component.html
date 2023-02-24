@@ -27,6 +27,14 @@
             </span>
           </a>
         </li>
+
+        <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <a class="nav-link d-inline-flex align-items-center" routerLink="/custom-car/new" (click)="collapseNavbar()">
+            <img src="../../../content/images/add-car-icon.png" height="21" width="20" alt="" />
+            <span>&nbsp;Add car</span>
+          </a>
+        </li>
+
         <!-- jhipster-needle-add-element-to-menu - JHipster will add new menu items here -->
         <li
           *ngSwitchCase="true"

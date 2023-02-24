@@ -10,6 +10,8 @@ import { ICar } from '../entities/car/car.model';
 import { SortService } from '../shared/sort/sort.service';
 import { ASC, DEFAULT_SORT_DATA, DESC, SORT } from '../config/navigation.constants';
 import { CarBrand } from '../entities/enumerations/car-brand.model';
+import { CarDeleteCustomComponent } from '../entities/custom/car/car-delete-custom/car-delete-custom.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'jhi-home',
@@ -33,10 +35,13 @@ export class HomeComponent implements OnInit, OnDestroy {
   constructor(
     private accountService: AccountService,
     private router: Router,
+    protected modalService: NgbModal,
     protected activatedRoute: ActivatedRoute,
     protected sortService: SortService,
     protected carService: CarService
-  ) {}
+  ) {
+    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+  }
 
   ngOnInit(): void {
     this.load();
@@ -87,9 +92,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   protected fillComponentAttributeFromRoute(params: ParamMap, data: Data): void {
-    console.log(data);
-    console.log(params);
-    console.log(params.get(SORT) ?? data[DEFAULT_SORT_DATA]);
     const sort = (params.get(SORT) ?? data[DEFAULT_SORT_DATA])!.split(',');
     this.predicate = sort[0];
     this.ascending = sort[1] === ASC;
@@ -119,5 +121,10 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   getCarBrand(i: number): string {
     return this.carBrandValues[this.carBrandKeys.indexOf(this.cars[i].carBrand! as string)];
+  }
+
+  delete(car: ICar): void {
+    const modalRef = this.modalService.open(CarDeleteCustomComponent, { backdrop: 'static' });
+    modalRef.componentInstance.car = car;
   }
 }

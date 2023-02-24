@@ -2,18 +2,20 @@
   <div class="row row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
     <div *ngFor="let car of cars; let i = index">
       <div class="col h-100" id="car-card-{{ car.carBrand }}-{{ car.model }}">
-        <div class="card h-100 border-secondary text-dark my2" style="background: #f5f1ed">
+        <div class="card h-100 border-secondary text-dark" style="background: #f5f1ed">
           <div class="mx-3 my-2">
-            <div class="d-flex" style="height: 200px; position: relative">
-              <!--              <div *ngIf="loginService.isAuthenticated() && loginService.isAdmin()" style="position: absolute;top:15px;width: 97%"-->
-              <!--                   class="text-end card-button">-->
-              <!--                <app-edit-car-button [carBrand]="car.brand" [carModel]="car.model"-->
-              <!--                                     [carId]=car!.id></app-edit-car-button>-->
-              <!--                &nbsp;-->
-              <!--                <app-confirm-delete-car-button [carId]=car!.id [imageFileName]="car!.imageFileName" [parent]="this"-->
-              <!--                                               [brand]="car.brand" [model]="car.model">-->
-              <!--                </app-confirm-delete-car-button>-->
-              <!--              </div>-->
+            <div class="d-flex justify-content-between" style="height: 200px; position: relative">
+              <div style="position: absolute; top: 15px; width: 97%" class="text-center card-button">
+                <button type="button" [routerLink]="['/custom-car', car.id, 'edit']" class="btn" style="background: #a1cca5">
+                  <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+                </button>
+                &nbsp;&nbsp;
+                <button type="submit" (click)="delete(car)" class="btn" style="background: #ed6a5a" data-cy="entityDeleteButton">
+                  <fa-icon icon="times"></fa-icon>
+                  <span class="d-none d-md-inline">Delete</span>
+                </button>
+              </div>
+
               <a [routerLink]="['/custom-car', car.id, 'view']">
                 <img src="https://d3t4g72htdika4.cloudfront.net/default-car-image" alt="" class="card-img-top img-thumbnail" />
               </a>
