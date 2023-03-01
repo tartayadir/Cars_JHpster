@@ -12,10 +12,73 @@
     <div class="card-body" style="background: #252323; color: #f5f1ed">
       <jhi-alert-error></jhi-alert-error>
 
+      <div class="form-group my-2">
+        <label><h6>Car image</h6></label>
+
+        <ng-container *ngIf="imageIsUploaded && imageTypeIsValid">
+          <div class="form-group">
+            <br />
+            <img [src]="imageUrl" class="img-thumbnail" alt="" height="200" />
+          </div>
+        </ng-container>
+        <ng-container *ngIf="car && !imageIsUploaded">
+          <div class="form-group">
+            <br />
+            <img src="{{ getImageURL() }}" alt="" class="img-thumbnail" height="200" />
+          </div>
+        </ng-container>
+        <ng-container *ngIf="!imageIsUploaded">
+          <br />
+          <button
+            type="button"
+            class="btn button-outline my-2"
+            style="background: #a1cca5"
+            id="upload-image-button"
+            (click)="openModalWindow(editImage)"
+          >
+            <img src="./content/images/upload-image-icon.png" alt="upload image" />
+            <span>Upload</span>
+          </button>
+        </ng-container>
+        <ng-container *ngIf="imageIsUploaded">
+          <br />
+          <button
+            type="button"
+            class="btn button-outline my-2"
+            style="background: #a1cca5"
+            id="change-image-button"
+            (click)="[openModalWindow(editImage)]"
+          >
+            <img src="./content/images/edit-image-icon.png" />
+            <span>Change image</span>
+          </button>
+        </ng-container>
+        <div id="image-input-error-massage">
+          <ng-container *ngIf="!imageTypeIsValid && !(trySubmitted && !imageIsUploaded)">
+            <span class="text-danger">Car image have invalid file type.</span>
+          </ng-container>
+        </div>
+      </div>
+
       <div class="row mb-4 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3">
         <div class="col d-inline-flex">
           <div class="form-outline">
-            <label for="field_carBrand" class="form-label"><h6>Car Brand</h6></label>
+            <label for="field_carBrand" class="form-label d-inline-flex align-items-center">
+              <h6>Car Brand</h6>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="8"
+                height="8"
+                fill="currentColor"
+                class="bi bi-asterisk ms-1"
+                viewBox="0 0 16 16"
+                style="color: red"
+              >
+                <path
+                  d="M8 0a1 1 0 0 1 1 1v5.268l4.562-2.634a1 1 0 1 1 1 1.732L10 8l4.562 2.634a1 1 0 1 1-1 1.732L9 9.732V15a1 1 0 1 1-2 0V9.732l-4.562 2.634a1 1 0 1 1-1-1.732L6 8 1.438 5.366a1 1 0 0 1 1-1.732L7 6.268V1a1 1 0 0 1 1-1z"
+                ></path>
+              </svg>
+            </label>
             <select
               class="form-select"
               name="carBrand"
@@ -28,14 +91,29 @@
               <option *ngFor="let carBrand of carBrandKeys" [value]="carBrand">{{ carBrandValues[carBrandKeys.indexOf(carBrand)] }}</option>
             </select>
             <div *ngIf="editForm.get('carBrand')!.invalid && (editForm.get('carBrand')!.dirty || editForm.get('carBrand')!.touched)">
-              <small class="form-text text-danger" *ngIf="editForm.get('carBrand')?.errors?.required"> This field is required. </small>
+              <small class="form-text text-danger" *ngIf="editForm.get('carBrand')?.errors?.required"> Car brand is required. </small>
             </div>
           </div>
         </div>
 
         <div class="col d-inline-flex">
           <div class="form-outline">
-            <label class="form-label" for="field_model"><h6>Model</h6></label>
+            <label class="form-label d-inline-flex align-items-center" for="field_model">
+              <h6>Model</h6>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="8"
+                height="8"
+                fill="currentColor"
+                class="bi bi-asterisk ms-1"
+                viewBox="0 0 16 16"
+                style="color: red"
+              >
+                <path
+                  d="M8 0a1 1 0 0 1 1 1v5.268l4.562-2.634a1 1 0 1 1 1 1.732L10 8l4.562 2.634a1 1 0 1 1-1 1.732L9 9.732V15a1 1 0 1 1-2 0V9.732l-4.562 2.634a1 1 0 1 1-1-1.732L6 8 1.438 5.366a1 1 0 0 1 1-1.732L7 6.268V1a1 1 0 0 1 1-1z"
+                ></path>
+              </svg>
+            </label>
             <input
               type="text"
               class="form-control"
@@ -45,17 +123,19 @@
               maxlength="41"
               style="background: #f5f1ed"
               formControlName="model"
+              cdkTrapFocus
+              cdkTrapFocusAutoCapture
             />
             <div *ngIf="editForm.get('model')!.invalid && (editForm.get('model')!.dirty || editForm.get('model')!.touched)">
-              <small class="form-text text-danger" *ngIf="editForm.get('model')?.errors?.required"> This field is required. </small>
+              <small class="form-text text-danger" *ngIf="editForm.get('model')?.errors?.required"> Model is required. </small>
               <small class="form-text text-danger" *ngIf="editForm.get('model')?.errors?.minlength">
-                This field is required to be at least 2 characters.
+                This model is required to be at least 2 characters.
               </small>
               <small class="form-text text-danger" *ngIf="editForm.get('model')?.errors?.maxlength">
-                This field cannot be longer than 40 characters.
+                This model cannot be longer than 40 characters.
               </small>
               <small class="form-text text-danger" *ngIf="editForm.get('model')?.errors?.pattern">
-                This field should follow pattern for Model.
+                Model must not contain anything other than letters, also contains only numbers or start with number.
               </small>
             </div>
           </div>
@@ -63,7 +143,22 @@
 
         <div class="col d-inline-flex">
           <div class="form-outline">
-            <label class="form-label" for="field_carBodyType"><h6>Car Body Type</h6></label>
+            <label class="form-label d-inline-flex align-items-center" for="field_carBodyType">
+              <h6>Car Body Type</h6>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="8"
+                height="8"
+                fill="currentColor"
+                class="bi bi-asterisk ms-1"
+                viewBox="0 0 16 16"
+                style="color: red"
+              >
+                <path
+                  d="M8 0a1 1 0 0 1 1 1v5.268l4.562-2.634a1 1 0 1 1 1 1.732L10 8l4.562 2.634a1 1 0 1 1-1 1.732L9 9.732V15a1 1 0 1 1-2 0V9.732l-4.562 2.634a1 1 0 1 1-1-1.732L6 8 1.438 5.366a1 1 0 0 1 1-1.732L7 6.268V1a1 1 0 0 1 1-1z"
+                ></path>
+              </svg>
+            </label>
             <select
               class="form-select"
               name="carBodyType"
@@ -80,7 +175,9 @@
             <div
               *ngIf="editForm.get('carBodyType')!.invalid && (editForm.get('carBodyType')!.dirty || editForm.get('carBodyType')!.touched)"
             >
-              <small class="form-text text-danger" *ngIf="editForm.get('carBodyType')?.errors?.required"> This field is required. </small>
+              <small class="form-text text-danger" *ngIf="editForm.get('carBodyType')?.errors?.required"
+                >The car body type is required.</small
+              >
             </div>
           </div>
         </div>
@@ -89,7 +186,22 @@
       <div class="row mb-4 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3">
         <div class="col d-inline-flex">
           <div class="form-outline">
-            <label class="form-label" for="field_transmissionBoxTypes"><h6>Transmission Box Types</h6></label>
+            <label class="form-label d-inline-flex align-items-center" for="field_transmissionBoxTypes">
+              <h6>Transmission Box Types</h6>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="8"
+                height="8"
+                fill="currentColor"
+                class="bi bi-asterisk ms-1"
+                viewBox="0 0 16 16"
+                style="color: red"
+              >
+                <path
+                  d="M8 0a1 1 0 0 1 1 1v5.268l4.562-2.634a1 1 0 1 1 1 1.732L10 8l4.562 2.634a1 1 0 1 1-1 1.732L9 9.732V15a1 1 0 1 1-2 0V9.732l-4.562 2.634a1 1 0 1 1-1-1.732L6 8 1.438 5.366a1 1 0 0 1 1-1.732L7 6.268V1a1 1 0 0 1 1-1z"
+                ></path>
+              </svg>
+            </label>
 
             <ng-container *ngFor="let transmissionBoxType of transmissionBoxTypeKeys">
               <div class="form-check" id="transmission-box-input">
@@ -115,7 +227,7 @@
               "
             >
               <small class="form-text text-danger" *ngIf="editForm.get('transmissionBoxTypes')?.errors?.required">
-                This field is required.
+                This transmission box types is required.
               </small>
             </div>
           </div>
@@ -136,16 +248,37 @@
               formControlName="year"
             />
             <div *ngIf="editForm.get('year')!.invalid && (editForm.get('year')!.dirty || editForm.get('year')!.touched)">
-              <small class="form-text text-danger" *ngIf="editForm.get('year')?.errors?.min"> This field should be at least 1920. </small>
-              <small class="form-text text-danger" *ngIf="editForm.get('year')?.errors?.max"> This field cannot be more than 2023. </small>
-              <small class="form-text text-danger" [hidden]="!editForm.get('year')?.errors?.number"> This field should be a number. </small>
+              <small class="form-text text-danger" *ngIf="editForm.get('year')?.errors?.min">
+                The produce year should be at least 1920.
+              </small>
+              <small class="form-text text-danger" *ngIf="editForm.get('year')?.errors?.max">
+                The produce year cannot be more than 2023.
+              </small>
+              <small class="form-text text-danger" [hidden]="!editForm.get('year')?.errors?.number">
+                The produce year should be a number.
+              </small>
             </div>
           </div>
         </div>
 
         <div class="col d-inline-flex">
           <div class="form-outline">
-            <label class="form-label" for="field_engineCapacity"><h6>Engine Capacity</h6></label>
+            <label class="form-label d-inline-flex align-items-center" for="field_engineCapacity">
+              <h6>Engine Capacity</h6>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="8"
+                height="8"
+                fill="currentColor"
+                class="bi bi-asterisk ms-1"
+                viewBox="0 0 16 16"
+                style="color: red"
+              >
+                <path
+                  d="M8 0a1 1 0 0 1 1 1v5.268l4.562-2.634a1 1 0 1 1 1 1.732L10 8l4.562 2.634a1 1 0 1 1-1 1.732L9 9.732V15a1 1 0 1 1-2 0V9.732l-4.562 2.634a1 1 0 1 1-1-1.732L6 8 1.438 5.366a1 1 0 0 1 1-1.732L7 6.268V1a1 1 0 0 1 1-1z"
+                ></path>
+              </svg>
+            </label>
 
             <div class="input-group d-inline-flex">
               <div style="width: 65px">
@@ -173,16 +306,16 @@
               "
             >
               <small class="form-text text-danger" *ngIf="editForm.get('engineCapacity')?.errors?.required">
-                This field is required.
+                The engine capacity is required.
               </small>
               <small class="form-text text-danger" *ngIf="editForm.get('engineCapacity')?.errors?.min">
-                This field should be at least 0.
+                The engine capacity should be at least 0.
               </small>
               <small class="form-text text-danger" *ngIf="editForm.get('engineCapacity')?.errors?.max">
-                This field cannot be more than 15.
+                The engine capacity cannot be more than 15.
               </small>
               <small class="form-text text-danger" [hidden]="!editForm.get('engineCapacity')?.errors?.number">
-                This field should be a number.
+                The engine capacity should be a number.
               </small>
             </div>
           </div>
@@ -209,10 +342,11 @@
           "
         >
           <small class="form-text text-danger" *ngIf="editForm.get('shortDescription')?.errors?.maxlength">
-            This field cannot be longer than 1000 characters.
+            The short description cannot be longer than 1000 characters.
           </small>
           <small class="form-text text-danger" *ngIf="editForm.get('shortDescription')?.errors?.pattern">
-            This field should follow pattern for Short Description.
+            The short description should not contain anything but a word, numbers and punctuation marks, also cannot start with number or
+            punctuation mark.
           </small>
         </div>
       </div>
@@ -236,12 +370,30 @@
           "
         >
           <small class="form-text text-danger" *ngIf="editForm.get('fullDescription')?.errors?.maxlength">
-            This field cannot be longer than 5000 characters.
+            The full description cannot be longer than 5000 characters.
           </small>
           <small class="form-text text-danger" *ngIf="editForm.get('fullDescription')?.errors?.pattern">
-            This field should follow pattern for Full Description.
+            The full description should not contain anything but a word, numbers and punctuation marks, also cannot start with number or
+            punctuation mark.
           </small>
         </div>
+      </div>
+
+      <div class="form-outline mb-4">
+        <label><h6>Additional options</h6></label>
+
+        <tag-input
+          [ngModel]="additionalOptions"
+          [displayBy]="'option'"
+          [secondaryPlaceholder]="optionPlaceHolder"
+          style="background: #fff; color: #252323"
+          placeholder="Enter new option"
+          [ngModelOptions]="{ standalone: true, updateOn: 'blur' }"
+          (onAdd)="onAdding($event)"
+          (onRemove)="onRemoving($event)"
+          [separatorKeyCodes]="[32]"
+        >
+        </tag-input>
       </div>
     </div>
 
@@ -275,7 +427,7 @@
               type="submit"
               id="save-entity"
               data-cy="entityCreateSaveButton"
-              [disabled]="editForm.invalid || isSaving"
+              [disabled]="editForm.invalid || isSaving || (!imageTypeIsValid && !(trySubmitted && !imageIsUploaded))"
               class="btn btn-primary"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check2" viewBox="0 0 16 16">
@@ -291,3 +443,90 @@
     </div>
   </form>
 </div>
+
+<ng-template #editImage let-modal0 data-backdrop="static">
+  <div class="modal-header" style="background: #dad2bc">
+    <h4 class="modal-title" id="modal-edit-image-title">Upload image</h4>
+  </div>
+  <div class="modal-body" style="background: #dad2bc">
+    <ng-container *ngIf="!imageIsUploaded || !tryChangeImage">
+      <input
+        class="form-control"
+        style="background: #dad2bc"
+        type="file"
+        accept="image/png, image/gif, image/jpeg"
+        id="image-input"
+        (change)="onFileSelected($event)"
+      />
+    </ng-container>
+
+    <ng-container *ngIf="imageTypeIsValid && imageIsUploaded && tryChangeImage">
+      <div class="col-md-8">
+        <image-cropper
+          [imageChangedEvent]="imgChangeEvt"
+          [maintainAspectRatio]="true"
+          [aspectRatio]="4 / 3"
+          [resizeToWidth]="696.83"
+          [resizeToHeight]="522.61"
+          format="png"
+          (imageCropped)="cropImg($event)"
+          (imageLoaded)="imgLoad()"
+          (cropperReady)="initCropper()"
+          (loadImageFailed)="imgFailed()"
+        >
+        </image-cropper>
+      </div>
+    </ng-container>
+  </div>
+  <div class="modal-footer" style="background: #dad2bc">
+    <div class="d-flex bd-highlight mb-3">
+      <div class="container">
+        <ng-container *ngIf="!(imageIsUploaded && tryChangeImage && imageTypeIsValid)">
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            style="background: #c0b7b1"
+            id="image-modal-come-back-button"
+            (click)="modal0.close('Save click')"
+          >
+            <fa-icon icon="close"></fa-icon>&nbsp;<span>Cancel</span>
+          </button>
+        </ng-container>
+      </div>
+      <ng-container *ngIf="imageIsUploaded && tryChangeImage && imageTypeIsValid">
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          style="background: #c0b7b1"
+          id="apply-image-upload-button"
+          (click)="[modal0.close('Save click'), changeImageIsFalse()]"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            class="bi bi-box-arrow-in-down"
+            viewBox="0 0 16 16"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1h-2z"
+            />
+            <path
+              fill-rule="evenodd"
+              d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"
+            />
+          </svg>
+          <span> Upload</span>
+        </button>
+      </ng-container>
+    </div>
+  </div>
+</ng-template>
+
+<style>
+  .ng-invalid:not(form) {
+    border-left: unset;
+  }
+</style>

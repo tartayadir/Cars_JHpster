@@ -1,5 +1,7 @@
 package com.implemica.cars.config;
 
+import static javax.ws.rs.HttpMethod.GET;
+
 import com.implemica.cars.security.*;
 import com.implemica.cars.security.jwt.*;
 import org.springframework.context.annotation.Bean;
@@ -83,6 +85,8 @@ public class SecurityConfiguration {
             .antMatchers("/api/account/reset-password/init").permitAll()
             .antMatchers("/api/account/reset-password/finish").permitAll()
             .antMatchers("/api/admin/**").hasAuthority(AuthoritiesConstants.ADMIN)
+            .antMatchers("/api/cars/**", GET).permitAll()
+            .antMatchers("/api/additional-options/**", GET).permitAll()
             .antMatchers("/api/**").authenticated()
             .antMatchers("/management/health").permitAll()
             .antMatchers("/management/health/**").permitAll()

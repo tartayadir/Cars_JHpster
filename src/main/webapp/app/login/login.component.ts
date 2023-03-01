@@ -16,8 +16,11 @@ export class LoginComponent implements OnInit, AfterViewInit {
   authenticationError = false;
 
   loginForm = new FormGroup({
-    username: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
-    password: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    username: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.min(2), Validators.max(30), Validators.pattern('^[a-zA-z0-9_ ]+')],
+    }),
+    password: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.min(5), Validators.max(101)] }),
     rememberMe: new FormControl(false, { nonNullable: true, validators: [Validators.required] }),
   });
 
@@ -47,5 +50,9 @@ export class LoginComponent implements OnInit, AfterViewInit {
       },
       error: () => (this.authenticationError = true),
     });
+  }
+
+  previousState(): void {
+    window.history.back();
   }
 }

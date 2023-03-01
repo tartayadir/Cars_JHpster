@@ -1,7 +1,10 @@
 package com.implemica.cars.web.rest;
 
-import com.implemica.cars.domain.AdditionalOption;
+import static java.lang.String.format;
+
 import com.implemica.cars.repository.AdditionalOptionRepository;
+import com.implemica.cars.service.AdditionalOptionService;
+import com.implemica.cars.service.dto.AdditionalOptionDTO;
 import com.implemica.cars.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -12,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.ResponseUtil;
@@ -22,7 +24,6 @@ import tech.jhipster.web.util.ResponseUtil;
  */
 @RestController
 @RequestMapping("/api")
-@Transactional
 public class AdditionalOptionResource {
 
     private final Logger log = LoggerFactory.getLogger(AdditionalOptionResource.class);
@@ -32,27 +33,33 @@ public class AdditionalOptionResource {
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 
+    private final AdditionalOptionService additionalOptionService;
+
     private final AdditionalOptionRepository additionalOptionRepository;
 
-    public AdditionalOptionResource(AdditionalOptionRepository additionalOptionRepository) {
+    public AdditionalOptionResource(
+        AdditionalOptionService additionalOptionService,
+        AdditionalOptionRepository additionalOptionRepository
+    ) {
+        this.additionalOptionService = additionalOptionService;
         this.additionalOptionRepository = additionalOptionRepository;
     }
 
     /**
      * {@code POST  /additional-options} : Create a new additionalOption.
      *
-     * @param additionalOption the additionalOption to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new additionalOption, or with status {@code 400 (Bad Request)} if the additionalOption has already an ID.
+     * @param additionalOptionDTO the additionalOptionDTO to create.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new additionalOptionDTO, or with status {@code 400 (Bad Request)} if the additionalOption has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/additional-options")
-    public ResponseEntity<AdditionalOption> createAdditionalOption(@RequestBody AdditionalOption additionalOption)
+    public ResponseEntity<AdditionalOptionDTO> createAdditionalOption(@RequestBody AdditionalOptionDTO additionalOptionDTO)
         throws URISyntaxException {
-        log.debug("REST request to save AdditionalOption : {}", additionalOption);
-        if (additionalOption.getId() != null) {
+        log.debug("REST request to save AdditionalOption : {}", additionalOptionDTO);
+        if (additionalOptionDTO.getId() != null) {
             throw new BadRequestAlertException("A new additionalOption cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        AdditionalOption result = additionalOptionRepository.save(additionalOption);
+        AdditionalOptionDTO result = additionalOptionService.save(additionalOptionDTO);
         return ResponseEntity
             .created(new URI("/api/additional-options/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
@@ -62,23 +69,23 @@ public class AdditionalOptionResource {
     /**
      * {@code PUT  /additional-options/:id} : Updates an existing additionalOption.
      *
-     * @param id the id of the additionalOption to save.
-     * @param additionalOption the additionalOption to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated additionalOption,
-     * or with status {@code 400 (Bad Request)} if the additionalOption is not valid,
-     * or with status {@code 500 (Internal Server Error)} if the additionalOption couldn't be updated.
+     * @param id the id of the additionalOptionDTO to save.
+     * @param additionalOptionDTO the additionalOptionDTO to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated additionalOptionDTO,
+     * or with status {@code 400 (Bad Request)} if the additionalOptionDTO is not valid,
+     * or with status {@code 500 (Internal Server Error)} if the additionalOptionDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/additional-options/{id}")
-    public ResponseEntity<AdditionalOption> updateAdditionalOption(
+    public ResponseEntity<AdditionalOptionDTO> updateAdditionalOption(
         @PathVariable(value = "id", required = false) final Long id,
-        @RequestBody AdditionalOption additionalOption
+        @RequestBody AdditionalOptionDTO additionalOptionDTO
     ) throws URISyntaxException {
-        log.debug("REST request to update AdditionalOption : {}, {}", id, additionalOption);
-        if (additionalOption.getId() == null) {
+        log.debug("REST request to update AdditionalOption : {}, {}", id, additionalOptionDTO);
+        if (additionalOptionDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        if (!Objects.equals(id, additionalOption.getId())) {
+        if (!Objects.equals(id, additionalOptionDTO.getId())) {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
@@ -86,34 +93,53 @@ public class AdditionalOptionResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        AdditionalOption result = additionalOptionRepository.save(additionalOption);
+        AdditionalOptionDTO result = additionalOptionService.update(additionalOptionDTO);
         return ResponseEntity
             .ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, additionalOption.getId().toString()))
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, additionalOptionDTO.getId().toString()))
+            .body(result);
+    }
+
+    @PutMapping("/additional-options")
+    public ResponseEntity<List<AdditionalOptionDTO>> updateAdditionalOptions(@RequestBody List<AdditionalOptionDTO> additionalOptionDTOs) {
+        additionalOptionDTOs.forEach(l -> log.info(l.toString()));
+        log.debug("REST request to update AdditionalOption with car id : {}", additionalOptionDTOs.get(0).getCar().getId());
+
+        List<AdditionalOptionDTO> result = additionalOptionService.updateOptions(additionalOptionDTOs);
+        return ResponseEntity
+            .ok()
+            .headers(
+                HeaderUtil.createEntityUpdateAlert(
+                    applicationName,
+                    false,
+                    format("%ss", ENTITY_NAME),
+                    additionalOptionDTOs.get(0).getCar().getId().toString()
+                )
+            )
             .body(result);
     }
 
     /**
      * {@code PATCH  /additional-options/:id} : Partial updates given fields of an existing additionalOption, field will ignore if it is null
      *
-     * @param id the id of the additionalOption to save.
-     * @param additionalOption the additionalOption to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated additionalOption,
-     * or with status {@code 400 (Bad Request)} if the additionalOption is not valid,
-     * or with status {@code 404 (Not Found)} if the additionalOption is not found,
-     * or with status {@code 500 (Internal Server Error)} if the additionalOption couldn't be updated.
+     * @param id the id of the additionalOptionDTO to save.
+     * @param additionalOptionDTO the additionalOptionDTO to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated additionalOptionDTO,
+     * or with status {@code 400 (Bad Request)} if the additionalOptionDTO is not valid,
+     * or with status {@code 404 (Not Found)} if the additionalOptionDTO is not found,
+     * or with status {@code 500 (Internal Server Error)} if the additionalOptionDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PatchMapping(value = "/additional-options/{id}", consumes = { "application/json", "application/merge-patch+json" })
-    public ResponseEntity<AdditionalOption> partialUpdateAdditionalOption(
+    public ResponseEntity<AdditionalOptionDTO> partialUpdateAdditionalOption(
         @PathVariable(value = "id", required = false) final Long id,
-        @RequestBody AdditionalOption additionalOption
+        @RequestBody AdditionalOptionDTO additionalOptionDTO
     ) throws URISyntaxException {
-        log.debug("REST request to partial update AdditionalOption partially : {}, {}", id, additionalOption);
-        if (additionalOption.getId() == null) {
+        log.debug("REST request to partial update AdditionalOption partially : {}, {}", id, additionalOptionDTO);
+        if (additionalOptionDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        if (!Objects.equals(id, additionalOption.getId())) {
+        if (!Objects.equals(id, additionalOptionDTO.getId())) {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
@@ -121,20 +147,11 @@ public class AdditionalOptionResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        Optional<AdditionalOption> result = additionalOptionRepository
-            .findById(additionalOption.getId())
-            .map(existingAdditionalOption -> {
-                if (additionalOption.getOption() != null) {
-                    existingAdditionalOption.setOption(additionalOption.getOption());
-                }
-
-                return existingAdditionalOption;
-            })
-            .map(additionalOptionRepository::save);
+        Optional<AdditionalOptionDTO> result = additionalOptionService.partialUpdate(additionalOptionDTO);
 
         return ResponseUtil.wrapOrNotFound(
             result,
-            HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, additionalOption.getId().toString())
+            HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, additionalOptionDTO.getId().toString())
         );
     }
 
@@ -144,37 +161,59 @@ public class AdditionalOptionResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of additionalOptions in body.
      */
     @GetMapping("/additional-options")
-    public List<AdditionalOption> getAllAdditionalOptions() {
+    public List<AdditionalOptionDTO> getAllAdditionalOptions() {
         log.debug("REST request to get all AdditionalOptions");
-        return additionalOptionRepository.findAll();
+        return additionalOptionService.findAll();
     }
 
     /**
      * {@code GET  /additional-options/:id} : get the "id" additionalOption.
      *
-     * @param id the id of the additionalOption to retrieve.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the additionalOption, or with status {@code 404 (Not Found)}.
+     * @param id the id of the additionalOptionDTO to retrieve.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the additionalOptionDTO, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/additional-options/{id}")
-    public ResponseEntity<AdditionalOption> getAdditionalOption(@PathVariable Long id) {
+    public ResponseEntity<AdditionalOptionDTO> getAdditionalOption(@PathVariable Long id) {
         log.debug("REST request to get AdditionalOption : {}", id);
-        Optional<AdditionalOption> additionalOption = additionalOptionRepository.findById(id);
-        return ResponseUtil.wrapOrNotFound(additionalOption);
+        Optional<AdditionalOptionDTO> additionalOptionDTO = additionalOptionService.findOne(id);
+        return ResponseUtil.wrapOrNotFound(additionalOptionDTO);
+    }
+
+    /**
+     {@code GET /additional-options/car/:carID} : Get all additional options of a car.
+     @param carID the ID of the car to get additional options for
+     @return the list of additional options of the car
+     */
+    @GetMapping("/additional-options/car/{carID}")
+    public List<AdditionalOptionDTO> getCarAdditionalOptions(@PathVariable Long carID) {
+        log.debug("REST request to get AdditionalOptions of car with id : {}", carID);
+        return additionalOptionService.findAllByCarId(carID);
     }
 
     /**
      * {@code DELETE  /additional-options/:id} : delete the "id" additionalOption.
      *
-     * @param id the id of the additionalOption to delete.
+     * @param id the id of the additionalOptionDTO to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/additional-options/{id}")
     public ResponseEntity<Void> deleteAdditionalOption(@PathVariable Long id) {
         log.debug("REST request to delete AdditionalOption : {}", id);
-        additionalOptionRepository.deleteById(id);
+        additionalOptionService.delete(id);
         return ResponseEntity
             .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
+            .build();
+    }
+
+    @DeleteMapping("/additional-options/car/{carID}")
+    public ResponseEntity<Void> deleteAdditionalOptionByCarID(@PathVariable Long carID) {
+        log.debug("REST request to delete AdditionalOptions with car id : {}", carID);
+        additionalOptionService.deleteByCar_Id(carID);
+
+        return ResponseEntity
+            .noContent()
+            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, carID.toString()))
             .build();
     }
 }

@@ -8,6 +8,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.implemica.cars.IntegrationTest;
 import com.implemica.cars.domain.AdditionalOption;
 import com.implemica.cars.repository.AdditionalOptionRepository;
+import com.implemica.cars.service.dto.AdditionalOptionDTO;
+import com.implemica.cars.service.mapper.AdditionalOptionMapper;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
@@ -40,6 +42,9 @@ class AdditionalOptionResourceIT {
 
     @Autowired
     private AdditionalOptionRepository additionalOptionRepository;
+
+    @Autowired
+    private AdditionalOptionMapper additionalOptionMapper;
 
     @Autowired
     private EntityManager em;
@@ -81,9 +86,10 @@ class AdditionalOptionResourceIT {
     void createAdditionalOption() throws Exception {
         int databaseSizeBeforeCreate = additionalOptionRepository.findAll().size();
         // Create the AdditionalOption
+        AdditionalOptionDTO additionalOptionDTO = additionalOptionMapper.toDto(additionalOption);
         restAdditionalOptionMockMvc
             .perform(
-                post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(additionalOption))
+                post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(additionalOptionDTO))
             )
             .andExpect(status().isCreated());
 
@@ -99,13 +105,14 @@ class AdditionalOptionResourceIT {
     void createAdditionalOptionWithExistingId() throws Exception {
         // Create the AdditionalOption with an existing ID
         additionalOption.setId(1L);
+        AdditionalOptionDTO additionalOptionDTO = additionalOptionMapper.toDto(additionalOption);
 
         int databaseSizeBeforeCreate = additionalOptionRepository.findAll().size();
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restAdditionalOptionMockMvc
             .perform(
-                post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(additionalOption))
+                post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(additionalOptionDTO))
             )
             .andExpect(status().isBadRequest());
 
@@ -164,12 +171,13 @@ class AdditionalOptionResourceIT {
         // Disconnect from session so that the updates on updatedAdditionalOption are not directly saved in db
         em.detach(updatedAdditionalOption);
         updatedAdditionalOption.option(UPDATED_OPTION);
+        AdditionalOptionDTO additionalOptionDTO = additionalOptionMapper.toDto(updatedAdditionalOption);
 
         restAdditionalOptionMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, updatedAdditionalOption.getId())
+                put(ENTITY_API_URL_ID, additionalOptionDTO.getId())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(updatedAdditionalOption))
+                    .content(TestUtil.convertObjectToJsonBytes(additionalOptionDTO))
             )
             .andExpect(status().isOk());
 
@@ -186,12 +194,15 @@ class AdditionalOptionResourceIT {
         int databaseSizeBeforeUpdate = additionalOptionRepository.findAll().size();
         additionalOption.setId(count.incrementAndGet());
 
+        // Create the AdditionalOption
+        AdditionalOptionDTO additionalOptionDTO = additionalOptionMapper.toDto(additionalOption);
+
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restAdditionalOptionMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, additionalOption.getId())
+                put(ENTITY_API_URL_ID, additionalOptionDTO.getId())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(additionalOption))
+                    .content(TestUtil.convertObjectToJsonBytes(additionalOptionDTO))
             )
             .andExpect(status().isBadRequest());
 
@@ -206,12 +217,15 @@ class AdditionalOptionResourceIT {
         int databaseSizeBeforeUpdate = additionalOptionRepository.findAll().size();
         additionalOption.setId(count.incrementAndGet());
 
+        // Create the AdditionalOption
+        AdditionalOptionDTO additionalOptionDTO = additionalOptionMapper.toDto(additionalOption);
+
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restAdditionalOptionMockMvc
             .perform(
                 put(ENTITY_API_URL_ID, count.incrementAndGet())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(additionalOption))
+                    .content(TestUtil.convertObjectToJsonBytes(additionalOptionDTO))
             )
             .andExpect(status().isBadRequest());
 
@@ -226,10 +240,13 @@ class AdditionalOptionResourceIT {
         int databaseSizeBeforeUpdate = additionalOptionRepository.findAll().size();
         additionalOption.setId(count.incrementAndGet());
 
+        // Create the AdditionalOption
+        AdditionalOptionDTO additionalOptionDTO = additionalOptionMapper.toDto(additionalOption);
+
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restAdditionalOptionMockMvc
             .perform(
-                put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(additionalOption))
+                put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(additionalOptionDTO))
             )
             .andExpect(status().isMethodNotAllowed());
 
@@ -300,12 +317,15 @@ class AdditionalOptionResourceIT {
         int databaseSizeBeforeUpdate = additionalOptionRepository.findAll().size();
         additionalOption.setId(count.incrementAndGet());
 
+        // Create the AdditionalOption
+        AdditionalOptionDTO additionalOptionDTO = additionalOptionMapper.toDto(additionalOption);
+
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restAdditionalOptionMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, additionalOption.getId())
+                patch(ENTITY_API_URL_ID, additionalOptionDTO.getId())
                     .contentType("application/merge-patch+json")
-                    .content(TestUtil.convertObjectToJsonBytes(additionalOption))
+                    .content(TestUtil.convertObjectToJsonBytes(additionalOptionDTO))
             )
             .andExpect(status().isBadRequest());
 
@@ -320,12 +340,15 @@ class AdditionalOptionResourceIT {
         int databaseSizeBeforeUpdate = additionalOptionRepository.findAll().size();
         additionalOption.setId(count.incrementAndGet());
 
+        // Create the AdditionalOption
+        AdditionalOptionDTO additionalOptionDTO = additionalOptionMapper.toDto(additionalOption);
+
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restAdditionalOptionMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, count.incrementAndGet())
                     .contentType("application/merge-patch+json")
-                    .content(TestUtil.convertObjectToJsonBytes(additionalOption))
+                    .content(TestUtil.convertObjectToJsonBytes(additionalOptionDTO))
             )
             .andExpect(status().isBadRequest());
 
@@ -340,12 +363,15 @@ class AdditionalOptionResourceIT {
         int databaseSizeBeforeUpdate = additionalOptionRepository.findAll().size();
         additionalOption.setId(count.incrementAndGet());
 
+        // Create the AdditionalOption
+        AdditionalOptionDTO additionalOptionDTO = additionalOptionMapper.toDto(additionalOption);
+
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restAdditionalOptionMockMvc
             .perform(
                 patch(ENTITY_API_URL)
                     .contentType("application/merge-patch+json")
-                    .content(TestUtil.convertObjectToJsonBytes(additionalOption))
+                    .content(TestUtil.convertObjectToJsonBytes(additionalOptionDTO))
             )
             .andExpect(status().isMethodNotAllowed());
 

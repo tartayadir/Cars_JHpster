@@ -6,6 +6,7 @@ import { UserRouteAccessService } from '../../../../core/auth/user-route-access.
 import { CarRoutingResolveService } from '../../../car/route/car-routing-resolve.service';
 import { CarDetailCustomComponent } from '../car-detail-custom/car-detail-custom.component';
 import { CarUpdateCustomComponent } from '../car-update-custom/car-update-custom.component';
+import { Authority } from '../../../../config/authority.constants';
 
 const carRoute: Routes = [
   {
@@ -19,10 +20,12 @@ const carRoute: Routes = [
   {
     path: ':id/view',
     component: CarDetailCustomComponent,
+    data: {
+      defaultSort: 'id,' + ASC,
+    },
     resolve: {
       car: CarRoutingResolveService,
     },
-    canActivate: [UserRouteAccessService],
   },
   {
     path: 'new',

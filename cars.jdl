@@ -54,6 +54,8 @@ entity Car {
   imageFileId String minlength(10) maxlength(150)
 }
 
+@dto(mapstruct)
+@service(serviceImpl)
 entity AdditionalOption {
     option String
 }

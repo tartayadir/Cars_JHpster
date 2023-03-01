@@ -13,6 +13,11 @@
 # http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
 # ===================================================================
 
+cars:
+  s3:
+    bucket_name: cars-storage-yaroslav-b.implemica.com
+    images_cahcecontrol: 7776000
+
 logging:
   level:
     ROOT: INFO

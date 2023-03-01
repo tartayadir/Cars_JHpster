@@ -30,6 +30,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   predicate = 'id';
   ascending = true;
 
+  bucketURL: string = 'https://d3t4g72htdika4.cloudfront.net/';
+
   private readonly destroy$ = new Subject<void>();
 
   constructor(
@@ -60,6 +62,10 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.onResponseSuccess(res);
       },
     });
+  }
+
+  getImageURL(car: ICar): string {
+    return this.bucketURL + car.imageFileId;
   }
 
   protected onResponseSuccess(response: EntityArrayResponseType): void {

@@ -49,7 +49,7 @@ export class AdditionalOptionUpdateComponent implements OnInit {
   save(): void {
     this.isSaving = true;
     const additionalOption = this.additionalOptionFormService.getAdditionalOption(this.editForm);
-    if (additionalOption.id !== null) {
+    if ('id' in additionalOption && additionalOption.id !== null) {
       this.subscribeToSaveResponse(this.additionalOptionService.update(additionalOption));
     } else {
       this.subscribeToSaveResponse(this.additionalOptionService.create(additionalOption));

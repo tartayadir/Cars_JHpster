@@ -7,6 +7,8 @@ import { CarDeleteCustomComponent } from '../car-delete-custom/car-delete-custom
 import { CarService } from '../../../car/service/car.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Title } from '@angular/platform-browser';
+import { AdditionalOptionService } from '../../../additional-option/service/additional-option.service';
+import { IAdditionalOption } from '../../../additional-option/additional-option.model';
 
 @Component({
   selector: 'jhi-car-detail-custom',
@@ -15,11 +17,15 @@ import { Title } from '@angular/platform-browser';
 })
 export class CarDetailCustomComponent implements OnInit {
   car: ICar | null = null;
+  additionalOptions: IAdditionalOption[] = [];
+
+  bucketURL: string = 'https://d3t4g72htdika4.cloudfront.net/';
 
   predicate = 'id';
   ascending = true;
 
   constructor(
+    protected additionalOptionService: AdditionalOptionService,
     protected activatedRoute: ActivatedRoute,
     protected carService: CarService,
     public router: Router,
@@ -28,10 +34,25 @@ export class CarDetailCustomComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.loadAdditionalOptions();
+
     this.activatedRoute.data.subscribe(({ car }) => {
       this.car = car;
+      this.loadAdditionalOptions();
       this.titleService.setTitle(this.getCarBrand() + ' ' + car.model);
     });
+  }
+
+  loadAdditionalOptions(): void {
+    if (this.car) {
+      this.additionalOptionService.findByCarId(this.car.id).subscribe(options => {
+        this.additionalOptions = options.body ? options.body : [];
+      });
+    }
+  }
+
+  getImageURL(): string {
+    return this.bucketURL + this.car?.imageFileId;
   }
 
   previousState(): void {

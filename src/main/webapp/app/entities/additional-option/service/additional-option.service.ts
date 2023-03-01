@@ -6,6 +6,7 @@ import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
 import { IAdditionalOption, NewAdditionalOption } from '../additional-option.model';
+import { CustomOption } from '../../custom/car/car-update-custom/car-update-custom.component';
 
 export type PartialUpdateAdditionalOption = Partial<IAdditionalOption> & Pick<IAdditionalOption, 'id'>;
 
@@ -30,12 +31,21 @@ export class AdditionalOptionService {
     );
   }
 
+  updateOptions(additionalOptions: CustomOption[]): Observable<HttpResponse<IAdditionalOption[]>> {
+    additionalOptions.forEach(l => console.log(l));
+    return this.http.put<IAdditionalOption[]>(`${this.resourceUrl}`, additionalOptions, { observe: 'response' });
+  }
+
   partialUpdate(additionalOption: PartialUpdateAdditionalOption): Observable<EntityResponseType> {
     return this.http.patch<IAdditionalOption>(
       `${this.resourceUrl}/${this.getAdditionalOptionIdentifier(additionalOption)}`,
       additionalOption,
       { observe: 'response' }
     );
+  }
+
+  findByCarId(idCar: number): Observable<EntityArrayResponseType> {
+    return this.http.get<IAdditionalOption[]>(`${this.resourceUrl}/car/${idCar}`, { observe: 'response' });
   }
 
   find(id: number): Observable<EntityResponseType> {
@@ -49,6 +59,14 @@ export class AdditionalOptionService {
 
   delete(id: number): Observable<HttpResponse<{}>> {
     return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
+  }
+
+  async deleteAll(additionalOptions: CustomOption[]): Promise<void> {
+    await additionalOptions.forEach(option => this.delete(option.id!).subscribe());
+  }
+
+  deleteByCarID(id: number): Observable<HttpResponse<{}>> {
+    return this.http.delete(`${this.resourceUrl}/car/${id}`, { observe: 'response' });
   }
 
   getAdditionalOptionIdentifier(additionalOption: Pick<IAdditionalOption, 'id'>): number {
